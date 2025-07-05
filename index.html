@@ -5,19 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Feliz Día Maestra</title>
   <style>
-    /* Fondo animado con gradiente arcoíris */
-    body {
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
       height: 100vh;
-      background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ade80, #facc15, #f87171);
-      background-size: 1000% 1000%;
-      animation: backgroundMove 20s ease infinite;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ade80, #facc15, #f87171);
+      background-size: 1000% 1000%;
+      animation: backgroundMove 20s ease infinite;
       font-family: 'Comic Sans MS', cursive, sans-serif;
-      overflow: hidden;
     }
 
     @keyframes backgroundMove {
@@ -26,41 +29,217 @@
       100% {background-position: 0% 50%;}
     }
 
-    /* Texto con animación multicolor */
     h1 {
       font-size: 4rem;
       text-align: center;
-      background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
-      background-size: 400% 400%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: rainbowText 5s linear infinite;
+      z-index: 10;
+      position: relative;
     }
 
-    @keyframes rainbowText {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    .letter {
+      display: inline-block;
+      animation: fadeIn 0.5s forwards, blink 2s infinite 1s, rainbow 4s linear infinite;
+      animation-delay: calc(var(--order) * 0.1s);
+      opacity: 0;
     }
 
-    /* Efecto de brillo */
-    h1::after {
-      content: "✨";
-      animation: sparkle 1.5s infinite alternate;
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    @keyframes sparkle {
-      0% { opacity: 0; transform: scale(1); }
-      100% { opacity: 1; transform: scale(1.5); }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    @keyframes rainbow {
+      0% { color: #ff0000; } /* Rojo */
+      16% { color: #ff8000; } /* Naranja */
+      32% { color: #ffff00; } /* Amarillo */
+      48% { color: #00ff00; } /* Verde */
+      64% { color: #0000ff; } /* Azul */
+      80% { color: #8000ff; } /* Púrpura */
+      100% { color: #ff0000; } /* Vuelve a rojo */
+    }
+    .balloon {
+      width: 40px;
+      height: 60px;
+      background-color: red;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      position: absolute;
+      bottom: -100px;
+      animation: floatUp linear infinite;
+    }
+
+    .string {
+      width: 2px;
+      height: 40px;
+      background: #333;
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) scale(1);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    canvas#confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
     }
   </style>
 </head>
 <body>
-  <h1>¡Feliz Día Maestra!</h1>
+  <h1 id="title"></h1>
+  <canvas id="confetti"></canvas>
+  <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio>
+  <audio id="confettiSound" src="https://assets.mixkit.co/active_storage/sfx/1663/1663-preview.mp3" preload="auto"></audio>
 
   <script>
-    // Puedes agregar efectos extra aquí si deseas
-    console.log("Gracias por todo, maestra 🌟");
+    // Animación de texto letra por letra
+    const text = "¡Feliz_Día_Maestra!";
+    const titleElement = document.getElementById('title');
+    
+    text.split('').forEach((char, i) => {
+      const span = document.createElement('span');
+      span.textContent = char;
+      span.className = 'letter';
+      span.style.setProperty('--order', i);
+      titleElement.appendChild(span);
+    });
+
+    // Sonidos
+    const popSound = document.getElementById('popSound');
+    const confettiSound = document.getElementById('confettiSound');
+
+    // Globos con sonido
+    function createBalloon() {
+      const colors = ['#FF3E3E', '#FFA500', '#FFFF33', '#33FF57', '#33C4FF', '#C633FF'];
+      const balloon = document.createElement('div');
+      balloon.classList.add('balloon');
+      balloon.style.left = Math.random() * 100 + 'vw';
+      balloon.style.animationDuration = (Math.random() * 5 + 5) + 's';
+      balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+      const string = document.createElement('div');
+      string.classList.add('string');
+      balloon.appendChild(string);
+
+      document.body.appendChild(balloon);
+
+      // Reproducir sonido de pop
+      const popSoundClone = popSound.cloneNode();
+      popSoundClone.volume = 0.3;
+      popSoundClone.play();
+
+      setTimeout(() => {
+        balloon.remove();
+      }, 10000);
+    }
+
+    setInterval(createBalloon, 1000);
+
+    // Confeti
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const confettiCount = 150;
+    const confetti = [];
+
+    for (let i = 0; i < confettiCount; i++) {
+      confetti.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 6 + 4,
+        d: Math.random() * confettiCount,
+        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+        tilt: Math.floor(Math.random() * 10) - 10,
+        tiltAngleIncremental: Math.random() * 0.07 + 0.05,
+        tiltAngle: 0
+      });
+    }
+
+    let lastConfettiSound = 0;
+    const SOUND_INTERVAL = 2000; // 2 segundos entre sonidos
+
+    function drawConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      const now = Date.now();
+      if (now - lastConfettiSound > SOUND_INTERVAL) {
+        const confettiSoundClone = confettiSound.cloneNode();
+        confettiSoundClone.volume = 0.2;
+        confettiSoundClone.play();
+        lastConfettiSound = now;
+      }
+
+      confetti.forEach((c, i) => {
+        ctx.beginPath();
+        ctx.lineWidth = c.r / 2;
+        ctx.strokeStyle = c.color;
+        ctx.moveTo(c.x + c.tilt + c.r / 4, c.y);
+        ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 4);
+        ctx.stroke();
+      });
+
+      updateConfetti();
+    }
+
+    function updateConfetti() {
+      confetti.forEach((c, i) => {
+        c.tiltAngle += c.tiltAngleIncremental;
+        c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+        c.x += Math.sin(c.d);
+        c.tilt = Math.sin(c.tiltAngle) * 15;
+
+        if (c.y > canvas.height) {
+          confetti[i] = {
+            x: Math.random() * canvas.width,
+            y: -10,
+            r: c.r,
+            d: c.d,
+            color: c.color,
+            tilt: c.tilt,
+            tiltAngleIncremental: c.tiltAngleIncremental,
+            tiltAngle: c.tiltAngle
+          };
+        }
+      });
+    }
+
+    function loop() {
+      drawConfetti();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
   </script>
 </body>
 </html>
