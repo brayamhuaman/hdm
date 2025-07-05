@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Feliz Día Maestra</title>
+  <style>
+    /* Fondo animado con gradiente arcoíris */
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ade80, #facc15, #f87171);
+      background-size: 1000% 1000%;
+      animation: backgroundMove 20s ease infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      overflow: hidden;
+    }
+
+    @keyframes backgroundMove {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    /* Texto con animación multicolor */
+    h1 {
+      font-size: 4rem;
+      text-align: center;
+      background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rainbowText 5s linear infinite;
+    }
+
+    @keyframes rainbowText {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Efecto de brillo */
+    h1::after {
+      content: "✨";
+      animation: sparkle 1.5s infinite alternate;
+    }
+
+    @keyframes sparkle {
+      0% { opacity: 0; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.5); }
+    }
+  </style>
+</head>
+<body>
+  <h1>¡Feliz Día Maestra!</h1>
+
+  <script>
+    // Puedes agregar efectos extra aquí si deseas
+    console.log("Gracias por todo, maestra 🌟");
+  </script>
+</body>
+</html>
